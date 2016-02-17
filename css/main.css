@@ -4,7 +4,7 @@ body {
 }
 
 a {
-    color: #30B030;
+    color: #4CAF50;
 }
 
 .brand {
@@ -12,7 +12,20 @@ a {
 }
 
 #header {
-    background-color: #30B030;
+    background-color: #4CAF50;
+}
+
+th {
+    background-color: #4CAF50;
+}
+
+table {
+    width: 80%;    
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
 }
 
 pre, code {
