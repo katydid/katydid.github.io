@@ -3,6 +3,8 @@ layout: default
 title: "Katydid"
 ---
 
+## Katydid
+
 Katydid is a tree validation language.
 
 ### What is a validation language
@@ -22,7 +24,7 @@ Katydid supports multiple types of trees:
   * Easy to add your own. Simply implement a [parser](http://katydid.github.io/dev/parsers)
 
 ## Status
-Katydid is ready for use, but backwards compatibility is not yet guaranteed.
+Katydid version 0.2 is in beta.
 [![Build Status](https://drone.io/github.com/katydid/katydid/status.png)](https://drone.io/github.com/katydid/katydid/latest)
 
 ## Ideals
@@ -35,11 +37,11 @@ Katydid is ready for use, but backwards compatibility is not yet guaranteed.
 
 ## Playground
 
-http://katydid.github.io/play
+<http://katydid.github.io/play>
 
 ## Examples
 
-http://katydid.github.io/doc/examples
+<http://katydid.github.io/doc/examples>
 
 ## Theory
 
