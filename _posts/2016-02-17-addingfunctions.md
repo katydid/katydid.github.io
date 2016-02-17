@@ -1,9 +1,9 @@
 ---
 layout: page
 title: "Adding Functions"
-category: doc
+category: dev
 date: 2016-02-17
-order: 5
+order: 2
 ---
 
 Katydid does not allow the specification of new functions in Katydid itself.
