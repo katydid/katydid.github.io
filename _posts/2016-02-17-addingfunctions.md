@@ -9,7 +9,7 @@ order: 2
 Katydid does not allow the specification of new functions in Katydid itself.
 Katydid is implemented in Go, so adding your own functions will require you to write some Go.
 
-##Introduction
+## Introduction
 
 Let's look at the `contains` function:
 
@@ -80,7 +80,7 @@ Finally the `init` function registers the `contains` structure as a Katydid func
 The first parameter is the function name, since this can differ from the structure name.
 This is especially useful when we want to do function overloading.
 
-##Handling Errors
+## Handling Errors
 
 Some functions are inevitably going to have possible runtime errors.
 Here we see an `elem` function which returns the element in the list at the specified index.
@@ -122,7 +122,7 @@ func init() {
 
 When we see that the function is trying to access an element outside of the list range, we simply return a plain go error.
 
-###Handling Errors in Bool Functions
+### Handling Errors in Bool Functions
 
 The not function does not return errors.
 This means that when it receives an error it interprets it as false and returns true.
@@ -170,7 +170,7 @@ func (this *intLt) Eval() (bool, error) {
 }
 {% endhighlight %}
 
-##Constants and Compile Time Evaluations
+## Constants and Compile Time Evaluations
 
 There are some functions for which you want to calculate some things only once, 
 for example a regular expression matcher compiles the pattern only once.
@@ -233,7 +233,7 @@ The `Eval` method then uses the compiled regular expression to match the bytes.
 
 It is very important to remember to declare all the parameters you plan to use in the `Init` method as constant, otherwise you will get unexpected results.
 
-##Variables
+## Variables
 
 Variables are values that possibly change with every execution, typically these are fields, but they can also include functions whose values change over time, database versions, etc.
 
