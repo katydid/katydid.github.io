@@ -6,8 +6,8 @@ date: 2016-02-17
 order: 2
 ---
 
-Katydid does not allow the specification of new functions in Katydid itself.
-Katydid is implemented in Go, so adding your own functions will require you to write some Go.
+Relapse does not allow the specification of new functions in Relapse itself.
+Relapse is implemented in Go, so adding your own functions will require you to write some Go.
 
 ## Introduction
 
@@ -62,7 +62,7 @@ type String interface {
 }
 {% endhighlight %}
 
-This means that each parameter could be any structure or rather Katydid function that returns a string or even a string constant.
+This means that each parameter could be any structure or rather Relapse function that returns a string or even a string constant.
 
 The second part is the `contains` struct's Eval method, the actual implementation of the function.
 The method evaluates each of its parameters and then passes their values to the `strings.Contains` function which returns a `bool`.
@@ -76,7 +76,7 @@ type Bool interface {
 
 All function types are defined [here](https://github.com/katydid/katydid/blob/master/funcs/types.go).
 
-Finally the `init` function registers the `contains` structure as a Katydid function.
+Finally the `init` function registers the `contains` structure as a Relapse function.
 The first parameter is the function name, since this can differ from the structure name.
 This is especially useful when we want to do function overloading.
 
@@ -174,7 +174,7 @@ func (this *intLt) Eval() (bool, error) {
 
 There are some functions for which you want to calculate some things only once, 
 for example a regular expression matcher compiles the pattern only once.
-Lets look at Katydid's builtin regex function.
+Lets look at Relapse's builtin regex function.
 
 {% highlight go %}
 import (
@@ -224,7 +224,7 @@ Only struct fields with an `Eval` method are seen as function parameters.
 Secondly `ConstString` is a type we have not encountered before.
 `ConstString` is defined as exactly the same interface as String.
 There is a corresponding constant type for each function type.
-Katydid evaluates all functions, which do not depend on a variable, at compile time.
+Relapse evaluates all functions, which do not depend on a variable, at compile time.
 Variables will be discussed in the next section.
 By specifying a parameter as a constant, you are explicitly stating that this parameter will be evaluated at compile time and if this is not possible it must result in a compile error.
 
@@ -269,6 +269,6 @@ func init() {
 {% endhighlight %}
 
 Obviously this function's value will be different almost every time that it is evaluated.
-We added an  `IsVariable` method just to let Katydid know not to evaluate this function at compile time.
+We added an  `IsVariable` method just to let Relapse know not to evaluate this function at compile time.
 
 

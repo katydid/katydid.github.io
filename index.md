@@ -5,7 +5,11 @@ title: "Katydid"
 
 ## Katydid
 
-Katydid is a tree validation language.
+Katydid is a toolkit for trees.
+Currently there are two tools:
+
+  * A collection of parsers, and
+  * Relapse: a tree validation language.
 
 ### What is a validation language
 Regular expressions are used as validators for strings.
@@ -15,13 +19,15 @@ JsonSchema is a validation language for JSON.
 ### What are trees
 A tree is a structure, record, class that does not contain any loops.
 
-Katydid supports multiple types of trees:
+Katydid has implemented parsers for multiple types of trees:
 
   * [Protocol Buffers](https://developers.google.com/protocol-buffers/)
   * [Json](http://json.org/)
   * [Reflected structures in Go](http://golang.org/pkg/reflect)
   * and even XML for the dinosaurs and dragons.
   * Easy to add your own. Simply implement a [parser](http://katydid.github.io/dev/parsers)
+
+Relapse can validate these trees, since they have implemented Parsers.
 
 ## Status
 Katydid version 0.2 is in beta.
@@ -37,21 +43,21 @@ Katydid version 0.2 is in beta.
 
 ## Playground
 
-<http://katydid.github.io/play>
+[Relapse Playgroun](http://katydid.github.io/play)
 
 ## Examples
 
-<http://katydid.github.io/doc/examples>
+[Relapse Examples](http://katydid.github.io/doc/examples)
 
 ## Theory
 
 Tree Automata and Visual Pushdown Automata have been found to be very applicable to XML processing.
-Katydid tries to apply these Automata to different types of trees.
+Relapse tries to apply these Automata to different types of trees.
 
 ## Tools
 
-  * [Translate RelaxNG](https://github.com/katydid/relaxng) to Katydid
-  * [Translate JsonSchema](https://github.com/katydid/jsonschema) to Katydid
+  * [Translate RelaxNG](https://github.com/katydid/relaxng) to Relapse
+  * [Translate JsonSchema](https://github.com/katydid/jsonschema) to Relapse
 
 ## Possible Futures
 
