@@ -16,11 +16,12 @@ JsonSchema is a validation language for JSON.
 A tree is a structure, record, class that does not contain any loops.
 
 Katydid supports multiple types of trees:
- - [Protocol Buffers](https://developers.google.com/protocol-buffers/)
- - [Json](http://json.org/)
- - [Reflected structures in Go](http://golang.org/pkg/reflect)
- - and even XML for the dinosaurs and dragons.
- - Easy to add your own. Simply implement a [parser](http://katydid.github.io/dev/parsers)
+
+  * [Protocol Buffers](https://developers.google.com/protocol-buffers/)
+  * [Json](http://json.org/)
+  * [Reflected structures in Go](http://golang.org/pkg/reflect)
+  * and even XML for the dinosaurs and dragons.
+  * Easy to add your own. Simply implement a [parser](http://katydid.github.io/dev/parsers)
 
 ##Status
 Katydid is ready for use, but backwards compatibility is not yet guaranteed.
@@ -28,11 +29,11 @@ Katydid is ready for use, but backwards compatibility is not yet guaranteed.
 
 ##Ideals
 
- - Fits into a theoretical model
- - Solves practical use cases
- - Fast
- - Decidable (excluding User Defined Functions)
- - Expressive
+  * Fits into a theoretical model
+  * Solves practical use cases
+  * Fast
+  * Decidable (excluding User Defined Functions)
+  * Expressive
 
 ##Playground
 
@@ -49,14 +50,14 @@ Katydid tries to apply these Automata to different types of trees.
 
 ##Tools
 
- - [Translate RelaxNG](https://github.com/katydid/relaxng) to Katydid
- - [Translate JsonSchema](https://github.com/katydid/jsonschema) to Katydid
+  * [Translate RelaxNG](https://github.com/katydid/relaxng) to Katydid
+  * [Translate JsonSchema](https://github.com/katydid/jsonschema) to Katydid
 
 ##Possible Futures
 
- - Language Agnostic Testset
- - Capturing (like Regular Expression Capturing, but for trees)
- - Dynamic Transcoding between different Tree Types
- - Optionally enable Javascript/Lua user defined functions.
- - More serialization formats: CapnProto?, Bson, Yaml, Toml ...
- - Remove all dependencies from core Katydid repo and move all other extra functionality into richer feature set repos that extend the core of Katydid.
+  * Language Agnostic Testset
+  * Capturing (like Regular Expression Capturing, but for trees)
+  * Dynamic Transcoding between different Tree Types
+  * Optionally enable Javascript/Lua user defined functions.
+  * More serialization formats: CapnProto?, Bson, Yaml, Toml ...
+  * Remove all dependencies from core Katydid repo and move all other extra functionality into richer feature set repos that extend the core of Katydid.
