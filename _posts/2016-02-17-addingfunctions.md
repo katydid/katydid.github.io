@@ -6,13 +6,10 @@ date: 2016-02-17
 order: 5
 ---
 
-*Out of Date*
-
 Katydid does not allow the specification of new functions in Katydid itself.
 Katydid is implemented in Go, so adding your own functions will require you to write some Go.
 
-Introduction
-------------
+##Introduction
 
 Let's look at the `contains` function:
 
@@ -23,13 +20,25 @@ import (
 	"github.com/katydid/katydid/funcs"
 )
 
-type contains struct {
-	S      funcs.String
-	Substr funcs.String
+func Contains(s, sub String) Bool {
+	return &contains{s, sub}
 }
 
-func (this *contains) Eval() bool {
-	return strings.Contains(this.S.Eval(), this.Substr.Eval())
+type contains struct {
+	S      String
+	Substr String
+}
+
+func (this *contains) Eval() (bool, error) {
+	s, err := this.S.Eval()
+	if err != nil {
+		return false, err
+	}
+	subStr, err := this.Substr.Eval()
+	if err != nil {
+		return false, err
+	}
+	return strings.Contains(s, subStr), nil
 }
 
 func init() {
@@ -38,16 +47,18 @@ func init() {
 
 {% endhighlight %}
 
-As we can see there are three parts to this function, excluding the import part.
+As we can see there are four parts to this function, excluding the import part.
 
-The first defines the function parameters as a structure.
+The first defines a publically accesible way to create the function.  This is only for users that are constructing their queries programmatically in Go.
+
+The second defines the function parameters as a structure.
 Each of these parameters have a type `funcs.String`, which is a very simple interface.
 
 {% highlight go %}
 package funcs
 
 type String interface {
-	Eval() string
+	Eval() (string, error)
 }
 {% endhighlight %}
 
@@ -59,7 +70,7 @@ We can now guess that `contains` implements the `funcs.Bool` interface.
 
 {% highlight go %}
 type Bool interface {
-	Eval() bool
+	Eval() (bool, error)
 }
 {% endhighlight %}
 
@@ -67,108 +78,99 @@ All function types are defined [here](https://github.com/katydid/katydid/blob/ma
 
 Finally the `init` function registers the `contains` structure as a Katydid function.
 The first parameter is the function name, since this can differ from the structure name.
-This is especially useful when we want to implement the same function for multiple input parameters.
+This is especially useful when we want to do function overloading.
 
-Handling Errors
----------------
+##Handling Errors
 
 Some functions are inevitably going to have possible runtime errors.
-When executing a Katydid recognizer we expect it to return true or false and a possible error.
-Having your error return from the recognizer is as easy as throwing it.
 Here we see an `elem` function which returns the element in the list at the specified index.
 
 {% highlight go %}
 
-type elemFloat64s struct {
-	List  Float64s
-	Index Int64
-	Thrower
+type elemDoubles struct {
+	List  Doubles
+	Index Int
 }
 
-func (this *elemFloat64s) Eval() float64 {
-	list := this.List.Eval()
-	index := int(this.Index.Eval())
-	if len(list) == 0 {
-		this.Throw(errors.New("list is empty"))
-		return 0
+func (this *elemDoubles) Eval() (float64, error) {
+	list, err := this.List.Eval()
+	if err != nil {
+		return 0, err
 	}
-	//allows negative indices
+	index64, err := this.Index.Eval()
+	if err != nil {
+		return 0, err
+	}
+	index := int(index64)
+	if len(list) == 0 {
+		return 0, NewRangeCheckErr(index, len(list))
+	}
 	if index < 0 {
 		index = index % len(list)
 	}
 	if len(list) <= index {
-		this.Throw(NewRangeCheckErr(index, len(list)))
-		return 0
+		return 0, NewRangeCheckErr(index, len(list))
 	}
-	return list[index]
+	return list[index], nil
 }
 
 func init() {
-	Register("elem", new(elemFloat64s))
+	Register("elem", new(elemDoubles))
 }
 
 {% endhighlight %}
 
-`Thrower` is an instance of a struct rather than an interface. 
-Embedding, as in this example, initialises the Thrower struct to its default values and adds its exported methods to the `elemFloat64s` struct.
-These exported methods allow the `elemFloat64s` struct to satisfy the `SetCatcher` interface, which Katydid will be looking for when compiling your error throwing function.  
-This means that if you do not embed `Thrower` your function will not be able to throw an error.
+When we see that the function is trying to access an element outside of the list range, we simply return a plain go error.
 
-Our first error happens when we try to take an element from an empty list.
+###Handling Errors in Bool Functions
+
+The not function does not return errors.
+This means that when it receives an error it interprets it as false and returns true.
 
 {% highlight go %}
-if len(list) == 0 {
-	this.Throw(errors.New("list is empty"))
-	return 0
+func (this *not) Eval() (bool, error) {
+	b, err := this.V1.Eval()
+	if err != nil || !b {
+		return true, nil
+	}
+	return !b, nil
 }
 {% endhighlight %}
 
-This creates a new error and throws it to a catcher which is implemented as part of Katydid.
-
-The `Thrower` has a few helper functions to make the code more concise.
+This means that functions that are opposites of each other need to take this into account.
+Here we can see the greater or equal function returning false given an error.
 
 {% highlight go %}
-if len(list) == 0 {
-	return this.ThrowFloat64(errors.New("list is empty"))
+func (this *intGE) Eval() (bool, error) {
+	v1, err := this.V1.Eval()
+	if err != nil {
+		return false, nil
+	}
+	v2, err := this.V2.Eval()
+	if err != nil {
+		return false, nil
+	}
+	return v1 >= v2, nil
 }
 {% endhighlight %}
 
-`ThrowFloat64` throws an error just like before but also returns a zero float64 value.
-
-Our second error throws a range check error, which can also be written more concisely.
-{% highlight go %}
-if len(list) <= index {
-	return this.ThrowFloat64(NewRangeCheckErr(index, len(list)))
-}
-{% endhighlight %}
-
-`NewRangeCheckErr` is just a function which returns an error.
-
-{% highlight go %}
-type ErrRangeCheck struct {
-	Index int
-	Len int
-}
-
-func (this ErrRangeCheck) Error() string {
-	return fmt.Sprintf("range check error: trying to access index %d in list of length %d", this.Index, this.Len)
-}
-
-func NewRangeCheckErr(index, l int) ErrRangeCheck {
-	return ErrRangeCheck{index, l}
-}
-{% endhighlight %}
-
-This is just plain Go, anything that satisfies the error interface qualifies as an error.
+This means that the less than function needs to return true given an error.
 
 {% highlight go %}
-type error interface {
-	Error() string
+func (this *intLt) Eval() (bool, error) {
+	v1, err := this.V1.Eval()
+	if err != nil {
+		return true, nil
+	}
+	v2, err := this.V2.Eval()
+	if err != nil {
+		return true, nil
+	}
+	return v1 < v2, nil
 }
 {% endhighlight %}
 
-Constants and Compile Time Evaluations
---------------------------------------
+##Constants and Compile Time Evaluations
 
 There are some functions for which you want to calculate some things only once, 
 for example a regular expression matcher compiles the pattern only once.
@@ -179,23 +181,35 @@ import (
 	"regexp"
 )
 
+func Regex(e ConstString, s String) Bool {
+	return &regex{Expr: e, S: s}
+}
+
 type regex struct {
-	compiledRegex *regexp.Regexp
+	r    *regexp.Regexp
 	Expr ConstString
-	B    Bytes
+	S    String
 }
 
 func (this *regex) Init() error {
-	r, err := regexp.Compile(this.Expr.Eval())
+	e, err := this.Expr.Eval()
 	if err != nil {
 		return err
 	}
-	this.compiledRegex = r
+	r, err := regexp.Compile(e)
+	if err != nil {
+		return err
+	}
+	this.r = r
 	return nil
 }
 
-func (this *regex) Eval() bool {
-	return this.compiledRegex.Match(this.B.Eval())
+func (this *regex) Eval() (bool, error) {
+	s, err := this.S.Eval()
+	if err != nil {
+		return false, err
+	}
+	return this.r.MatchString(s), nil
 }
 
 func init() {
@@ -204,7 +218,7 @@ func init() {
 {% endhighlight %}
 
 There are a few new concepts here.
-Firstly `compiledRegex` is a field member of the struct, but it is not a parameter for the regex function.
+Firstly `r` is a field member of the struct, but it is not a parameter for the regex function.
 Only struct fields with an `Eval` method are seen as function parameters.
 
 Secondly `ConstString` is a type we have not encountered before.
@@ -214,13 +228,12 @@ Katydid evaluates all functions, which do not depend on a variable, at compile t
 Variables will be discussed in the next section.
 By specifying a parameter as a constant, you are explicitly stating that this parameter will be evaluated at compile time and if this is not possible it must result in a compile error.
 
-Finally we get to the `Init` method, which compiles the regular expression at compile time, using the constant string and places the result in `compiledRegex`.  
+Finally we get to the `Init` method, which compiles the regular expression at compile time, using the constant string and places the result in the field `r`.  
 The `Eval` method then uses the compiled regular expression to match the bytes.
 
 It is very important to remember to declare all the parameters you plan to use in the `Init` method as constant, otherwise you will get unexpected results.
 
-Variables
----------
+##Variables
 
 Variables are values that possibly change with every execution, typically these are fields, but they can also include functions whose values change over time, database versions, etc.
 
@@ -238,10 +251,14 @@ Lets look at the `now` function:
 {% highlight go %}
 import "time"
 
+func Now() Int {
+	return &now{}
+}
+
 type now struct{}
 
-func (this *now) Eval() int64 {
-	return time.Now().UnixNano()
+func (this *now) Eval() (int64, error) {
+	return time.Now().UnixNano(), nil
 }
 
 func (this *now) IsVariable() {}
@@ -252,18 +269,6 @@ func init() {
 {% endhighlight %}
 
 Obviously this function's value will be different almost every time that it is evaluated.
-We added a  `IsVariable` method just to let Katydid know not to evaluate this function at compile time.
+We added an  `IsVariable` method just to let Katydid know not to evaluate this function at compile time.
 
-Injecting Values
-----------------
-
-Sometimes you have a function that is dependant on a value that changes often, 
-but you don't want to create a global variable which this function can access.
-You would prefer to inject this value into your function.
-
-Using the [Implements](http://godoc.org/github.com/katydid/katydid/asm/inject) function in the `inject` package you can retrieve all Katydid functions that satisfies a specific interface as a list.
-You can then range over this list calling a type of `Set` method to inject your value.
-
-This is quite an advanced function.
-Please see the [inject test](https://github.com/katydid/katydid/blob/master/asm/test/inject_test.go) for an example.
 
