@@ -3,9 +3,7 @@ layout: default
 title: "Katydid"
 ---
 
-*Testing*
-
-#Katydid
+#katydid
 
 Katydid is a tree validation language.
 
