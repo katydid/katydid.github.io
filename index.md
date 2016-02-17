@@ -3,16 +3,14 @@ layout: default
 title: "Katydid"
 ---
 
-#katydid
-
 Katydid is a tree validation language.
 
-###What is a validation language?
+###What is a validation language
 Regular expressions are used as validators for strings.
 RelaxNG, DTD and XSchema are validation languages for XML.
 JsonSchema is a validation language for JSON.
 
-###What are trees?
+###What are trees
 A tree is a structure, record, class that does not contain any loops.
 
 Katydid supports multiple types of trees:
