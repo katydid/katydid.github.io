@@ -3,6 +3,18 @@ body {
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7);
 }
 
+a {
+    color: #30B030;
+}
+
+.brand {
+    color: #000000;
+}
+
+#header {
+    background-color: #30B030;
+}
+
 pre, code {
     border: none;
     border-radius: 0;
