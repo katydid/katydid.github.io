@@ -49,7 +49,7 @@ func init() {
 
 As we can see there are four parts to this function, excluding the import part.
 
-The first defines a publically accesible way to create the function.  This is only for users that are constructing their queries programmatically in Go.
+The first defines a publicly accessible way to create the function.  This is only for users that are constructing their queries programmatically in Go.
 
 The second defines the function parameters as a structure.
 Each of these parameters have a type `funcs.String`, which is a very simple interface.
@@ -64,7 +64,7 @@ type String interface {
 
 This means that each parameter could be any structure or rather Relapse function that returns a string or even a string constant.
 
-The second part is the `contains` struct's Eval method, the actual implementation of the function.
+The second part is the `contains` structure's Eval method, the actual implementation of the function.
 The method evaluates each of its parameters and then passes their values to the `strings.Contains` function which returns a `bool`.
 We can now guess that `contains` implements the `funcs.Bool` interface.
 
@@ -122,7 +122,7 @@ func init() {
 
 When we see that the function is trying to access an element outside of the list range, we simply return a plain go error.
 
-### Handling Errors in Bool Functions
+### Handling Errors in Boolean Functions
 
 The not function does not return errors.
 This means that when it receives an error it interprets it as false and returns true.
@@ -174,7 +174,7 @@ func (this *intLt) Eval() (bool, error) {
 
 There are some functions for which you want to calculate some things only once, 
 for example a regular expression matcher compiles the pattern only once.
-Lets look at Relapse's builtin regex function.
+Lets look at Relapse's built in regular expression function.
 
 {% highlight go %}
 import (
@@ -218,8 +218,8 @@ func init() {
 {% endhighlight %}
 
 There are a few new concepts here.
-Firstly `r` is a field member of the struct, but it is not a parameter for the regex function.
-Only struct fields with an `Eval` method are seen as function parameters.
+Firstly `r` is a field member of the structure, but it is not a parameter for the regular expression function.
+Only the structure's fields with an `Eval` method are seen as function parameters.
 
 Secondly `ConstString` is a type we have not encountered before.
 `ConstString` is defined as exactly the same interface as String.
