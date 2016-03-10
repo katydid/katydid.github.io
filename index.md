@@ -48,7 +48,7 @@ Katydid version 0.2 is in alpha.
 
 ## Tour
 
-[Relapse Tour](http://katydid.github.io/tour)
+[Relapse Tour](http://katydid.github.io/tour) [Work in Progress]
 
 ## Playground
 
