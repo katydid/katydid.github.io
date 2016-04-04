@@ -17,7 +17,7 @@ Let's look at the `contains` function:
 
 import (
 	"strings"
-	"github.com/katydid/katydid/expr/funcs"
+	"github.com/katydid/katydid/relapse/funcs"
 )
 
 func Contains(s, sub String) Bool {
@@ -74,7 +74,7 @@ type Bool interface {
 }
 {% endhighlight %}
 
-All function types are defined [here](https://github.com/katydid/katydid/blob/master/expr/funcs/types.go).
+All function types are defined [here](https://github.com/katydid/katydid/blob/master/relapse/funcs/types.go).
 
 Finally the `init` function registers the `contains` structure as a Relapse function.
 The first parameter is the function name, since this can differ from the structure name.
