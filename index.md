@@ -5,6 +5,8 @@ title: "Katydid"
 
 ## Katydid
 
+<img src="{{ site.url }}/logo.png" width="300" style="float:right">
+
 Katydid is a toolkit for trees.
 Currently there are three tools:
 
@@ -34,8 +36,8 @@ Encoders can take parsers and encode (or transcode) them into other types of tre
 
 ### What is a Katydid?
 
-A Katydid is the common name for a [leaf insect](https://avatars1.githubusercontent.com/u/9207606?v=3&s=200).
-You might enjoy this [video](https://www.youtube.com/watch?v=SvjSP2xYZm8).
+A Katydid is the common name for a leaf insect.
+<iframe width="560" height="315" style="float:right" src="https://www.youtube.com/embed/SvjSP2xYZm8" frameborder="0" allowfullscreen></iframe>
 
 ## Status
 Katydid version 0.2 is in alpha.
