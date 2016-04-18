@@ -50,7 +50,7 @@ message SrcTree {
 }
 ~~~
 
-We get the following speed for the recursive query.
+We get the following speed for the recursive expression.
 
 ~~~
 ([PackageName:== "io",*]|[*,Imports._:@main])	      			1751 ns/op	      0 allocs/op
