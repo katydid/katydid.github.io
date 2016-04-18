@@ -1,9 +1,9 @@
 ---
 layout: page
-title: "Parsers"
-category: dev
+title: "Extendable"
+category: parser
 date: 2016-02-17
-order: 1
+order: 2
 ---
 
 Current implementations of parsers include:
@@ -37,27 +37,5 @@ type Value interface {
 This interface allows for the implementation of a streaming parser.
 A parser that lazily parses the input as the methods are called and only parses the input once, without backtracking.
 Exercising the parser can be done with the [debug.Walk](https://godoc.org/github.com/katydid/katydid/parser/debug#Walk) function.  The Walk function also returns some debugging output which should be useful in the development of your parser.
-
-Here is a simpler, but similar walk function, just to give an idea of the way your parser will be used.
-{% highlight go %}
-func walk(p parser.Interface) {
-    for {
-        if err := p.Next(); err != nil {
-            if err == io.EOF {
-                break
-            } else {
-                panic(err)
-            }
-        }
-        value := print(p.(parser.Value))
-        if !p.IsLeaf() {
-            p.Down()
-            walk(p)
-            p.Up()
-        }
-    }
-    return
-}
-{% endhighlight %}
 
 Your parser should also be able to handle skipping of some of the input.  This happens when the Walk function returns before encountering an `io.EOF`.  The [debug.RandomWalk](https://godoc.org/github.com/katydid/katydid/parser/debug#RandomWalk) function is useful for testing this type of robustness in your parser.

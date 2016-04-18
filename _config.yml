@@ -19,8 +19,8 @@ codeurl: 'https://github.com/katydid/katydid'
 
 # Default categories (in order) to appear in the navigation
 sections: [
-    ['doc', 'Documentation'],
-    ['tut', 'Tutorial'],
+    ['parser', 'Parsers'],
+    ['relapse', 'Relapse'],
     ['ref', 'Reference'],
     ['dev', 'Developers'],
     ['post', 'Posts']

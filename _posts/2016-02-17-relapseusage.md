@@ -1,18 +1,19 @@
 ---
 layout: page
 title: "Usage"
-category: doc
+category: relapse
 date: 2016-02-17
 order: 1
 ---
 
 This page will explain how to go from a Relapse grammar to validating a parsed tree.
-This is done in three steps.
+This is done in two steps.
 Each of these steps have several alternatives.
 
   1. Construct the Grammar
-  2. Construct the Parser
-  3. Validation
+  2. Validation
+
+This assumes you have already constructed a parser, if not see the page on [parser usage](../parser/addingparsers.html).
 
 ### Constructing a Relapse Grammar
 
@@ -68,56 +69,6 @@ func main() {
 	relapsePattern := In("a", Value(fun))
 	g := G{"main": relapsePattern}
 	relapseGrammar := g.Grammar()
-}
-{% endhighlight %}
-
-### Constructing a Parser
-
-A parser parses a specific serialization format or other parsable text or bytes.
-We need to put our unparsed text, bytes or other structure into a parser so that it can be validated.
-
-{% highlight go %}
-import "github.com/katydid/katydid/parser/json"
-
-func main() {
-	jsonString := `{"a": "abc"}`
-	jsonParser := json.NewJsonParser()
-	if err := jsonParser.Init([]byte(jsonString)); err != nil {
-		panic(err)
-	}
-}
-{% endhighlight %}
-
-We can also construct a protocol buffer parser.
-
-{% highlight go %}
-import protoparser "github.com/katydid/katydid/parser/proto"
-import "github.com/gogo/protobuf/proto"
-
-func main() {
-	protoParser := protoparser.NewProtoNameParser("mypackage", "mymessage", &Mymessage{}.Description())
-	msg := &Mymessage{A: "abc"}
-	data, err := proto.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-	if err := protoParser.Init(data); err != nil {
-		panic(err)
-	}
-}
-{% endhighlight %}
-
-We can even construct a parser for a reflected go structure.
-
-{% highlight go %}
-import reflectparser "github.com/katydid/katydid/parser/reflect"
-import "reflect"
-
-func main() {
-	reflectParser := reflectparser.NewReflectParser()
-	s := &MyStruct{A: "abc"}
-	v := reflect.ValueOf(s)
-	reflectParser.Init(v)
 }
 {% endhighlight %}
 

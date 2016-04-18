@@ -1,9 +1,9 @@
 ---
 layout: page
-title: "Adding Functions"
-category: dev
+title: "Extendable"
+category: relapse
 date: 2016-02-17
-order: 2
+order: 5
 ---
 
 Relapse does not allow the specification of new functions in Relapse itself.
