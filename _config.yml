@@ -21,7 +21,7 @@ codeurl: 'https://github.com/katydid/katydid'
 sections: [
     ['parser', 'Parsers'],
     ['relapse', 'Relapse'],
-    ['ref', 'Reference'],
+    ['encoder', 'Encoders'],
     ['dev', 'Developers'],
     ['post', 'Posts']
 ]
