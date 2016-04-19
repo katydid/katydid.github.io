@@ -119,7 +119,15 @@ We get the following benchmarks for the respective expressions listed below.
 
 That is tens of thousands of matches per second.
 
-#### Environment
+### How to reproduce
 
 Benchmarks were run using golang version 1.6 on a 2,7 GHz Intel Core i7 MacBook Pro with 16 GB 1600 MHz DDR3 memory.
 
+This speed was achieved using the [parser/proto.NewProtoNumParser](https://godoc.org/github.com/katydid/katydid/parser/proto#NewProtoNumParser) and the [relapse/protonum.FieldNamesToNumbers](https://godoc.org/github.com/katydid/katydid/relapse/protonum#FieldNamesToNumbers) function.
+
+You can also run the benchmarks yourself:
+
+~~~
+cd $GOPATH/src/github.com/katydid/katydid/relapse/auto
+go test -v -test.bench=.
+~~~
