@@ -13,9 +13,20 @@ Katydid is a toolkit for trees.
 
 Currently there are three tools in the katydid toolkit:
 
-  * Relapse: a regular expression type language for trees that matches up to 1000000s of records per second, 
-  * A collection of parsers (protobuf, json, xml, reflected go structures) which are easily extendable, and
-  * A collection of encoders (protobuf, json, xml, reflected go structures) which are useful for dynamic transcoding.
+  * **Relapse**: 
+    - a regular expression type language for trees (any implemented parser)
+    - [**matches up to 1000000s of records per second**](./relapse/relapsespeed.html)
+  * A collection of **parsers** which are easily extendable:
+    - protobuf
+    - json
+    - xml
+    - reflected go structures
+    - [add your own](./parser/addingparsers.html)
+  * A collection of **encoders** which are useful for dynamic transcoding from any implemented parser:
+    - protobuf
+    - json
+    - xml
+    - reflected go structures
 
 #### What are trees?
 
