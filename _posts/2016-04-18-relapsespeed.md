@@ -128,6 +128,22 @@ This speed was achieved using the [parser/proto.NewProtoNumParser](https://godoc
 You can also run the benchmarks yourself:
 
 ~~~
-cd $GOPATH/src/github.com/katydid/katydid/relapse/auto
-go test -v -test.bench=.
+go test -v -bench=. github.com/katydid/katydid/relapse/auto
 ~~~
+
+### Memoized vs Compiled
+
+These benchmarks have been run on the compiled automata or auto package.
+The mem package contains a memoizing implementation of relapse.
+This achieves comparable speeds to the compiled version, given some number of iterations.
+
+[See our comparable benchmarks](../bench/index.html)
+
+Reproducing these benchmarks requires using the b.N argument:
+~~~
+go test -v -bench=. github.com/katydid/katydid/relapse/mem -args -b.N=10
+~~~
+
+The compilation of relapse into an automata can have some state explosions resulting in very long compilations.
+This is why the mem package is the default implementation.  It provides comparable speeds and does not have any state explosion problems.
+
