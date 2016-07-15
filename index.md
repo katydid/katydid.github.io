@@ -9,7 +9,7 @@ title: "Katydid"
 
 [**Katydid**](https://github.com/katydid/katydid) is a toolkit for trees.
 
-[![GoDoc](https://godoc.org/github.com/katydid/katydid?status.svg)](https://godoc.org/github.com/katydid/katydid) [![Build Status](https://drone.io/github.com/katydid/katydid/status.png)](https://drone.io/github.com/katydid/katydid/latest) Version 0.2 Alpha.
+[![GoDoc](https://godoc.org/github.com/katydid/katydid?status.svg)](https://godoc.org/github.com/katydid/katydid) [![Build Status](https://drone.io/github.com/katydid/katydid/status.png)](https://drone.io/github.com/katydid/katydid/latest) Version 0.2 Beta.
 
 Currently there are three tools in the katydid toolkit:
 
