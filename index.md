@@ -70,6 +70,5 @@ A Katydid is the common name for a leaf insect.
 
   * Capturing (like Regular Expression Capturing, but for trees)
   * Investigate viability of usage as a type system.
-  * Language Agnostic Test set
   * More serialization formats: CapnProto?, MsgPack, Thrift, Bson, Yaml, Toml ...
   * Remove the one dependency on gogoprotobuf from the core Katydid repository.

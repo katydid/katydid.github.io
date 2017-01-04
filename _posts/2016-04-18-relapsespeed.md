@@ -128,6 +128,8 @@ This speed was achieved using the [parser/proto.NewProtoNumParser](https://godoc
 You can also run the benchmarks yourself:
 
 ~~~
+git clone https://github.com/katydid/testsuite $GOPATH/src/github.com/katydid/testsuite
+(cd $GOPATH/src/github.com/katydid/testsuite && make regenerate)
 go test -v -bench=. github.com/katydid/katydid/relapse/auto
 ~~~
 
@@ -140,6 +142,7 @@ This achieves comparable speeds to the compiled version, given some number of it
 [See our comparable benchmarks](../bench/index.html)
 
 Reproducing these benchmarks requires using the b.N argument:
+
 ~~~
 go test -v -bench=. github.com/katydid/katydid/relapse/mem -args -b.N=10
 ~~~
