@@ -106,7 +106,7 @@ That is hundreds of thousands of matches per second.
 
 #### Large
 
-Given [a relatively large message](https://github.com/katydid/katydid/blob/master/relapse/tests/puddingmilkshake.proto).
+Given [a relatively large message](https://github.com/katydid/testsuite/blob/master/relapse/gen-relapse-tests/puddingmilkshake.proto).
 
 We get the following benchmarks for the respective expressions listed below.
 
