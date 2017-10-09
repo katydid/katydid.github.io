@@ -22,6 +22,7 @@ sections: [
     ['parser', 'Parsers'],
     ['relapse', 'Relapse'],
     ['encoder', 'Encoders'],
+    ['tests', 'Tests'],
     ['dev', 'Developers'],
     ['post', 'Posts']
 ]
