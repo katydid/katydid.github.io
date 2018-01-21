@@ -24,9 +24,11 @@
 
         <div class="container">
             <div class="row">
-                <div id="header" class="col-sm-12">
+                <!-- <div class="col-sm-1"></div> -->
+                <div id="header" class="col-sm-11">
                     {% include header.html %}
                 </div>
+                <div class="col-sm-1"></div>
             </div>
 
             <div class="row">
@@ -36,11 +38,11 @@
                         {% include navigation.html %}
                     </div>
 
-                    <div id="content" class="col-sm-10">
+                    <div id="content" class="col-sm-9">
                         {{ content }}
                     </div>
                 {% else %}
-                    <div id="content" class="col-sm-12">
+                    <div id="content" class="col-sm-11">
                         {{ content }}
                     </div>
                 {% endif %}
@@ -50,11 +52,11 @@
             <div class="row">
               {% if site.navigation == 1 or post_count > 0 %}
                 <div id="navigation" class="col-sm-2"></div>
-                <div id="disqus" class="col-sm-10">
+                <div id="disqus" class="col-sm-9">
                     {% include disqus.html %}
                 </div>
               {% else %}
-                <div id="disqus" class="col-sm-12">
+                <div id="disqus" class="col-sm-11">
                     {% include disqus.html %}
                 </div>
               {% endif %}
