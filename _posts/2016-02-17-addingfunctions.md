@@ -11,7 +11,7 @@ Relapse is implemented in Go, so adding your own functions will require you to w
 
 ## Introduction
 
-Let's look at the `contains` function:
+Let's look at the implementation of the `contains` function:
 
 {% highlight go %}
 type contains struct {
@@ -79,21 +79,33 @@ func init() {
 
 {% endhighlight %}
 
-Our function is defined as a struct which has to implement the following interface:
+Our function is defined as a `struct`, which has to implement the following `Func` interface:
 
 {% highlight go %}
 type Func interface {
-	String() string
-	Compare(Comparable) int
-	Hash() uint64
+	Comparable
 	HasVariable() bool
+}
+
+type Comparable interface {
+	Compare(Comparable) int
+	Hashable
+	Stringer
+}
+
+type Hashable interface {
+	Hash() uint64
+}
+
+type Stringer interface {
+	String() string
 }
 {% endhighlight %}
 
-Each `struct` must also have an `Eval` method which returns a value of type: 
+Each function must also have an `Eval` method which returns a value of type: 
 `string`, `[]byte`, `int64`, `uint64`, `bool` or `float64` and an `error`.
 
-Our example is a function of type `Bool` so it implements an `Eval` method that returns a `bool` and an `error` and the `Func` interface.
+Our example is a function of type `Bool` so it implements an `Eval` method that returns a `bool` and an `error` and also the `Func` interface.
 {% highlight go %}
 type Bool interface {
 	Func
@@ -105,12 +117,12 @@ Finally, the function is registered with its name and a constructor.
 
 The constructor is responsible for:
 
-  - placing the parameters in the `struct`,
+  - placing the parameters in the `struct`, for later evaluation,
   - simplification of the function (optional),
   - trimming: calculating functions at compile time, if possible, and
-  - pre-calculating a hash of the function and whether the function has a variable.
+  - pre-calculating a hash of the function and whether the function's parameters has a variable.
 
-Each parameter is of type `Func`.  The type `String` in this case is an interface which includes a `Func` type.
+Each parameter is of type `Func`.  For our example, `contains`, both parameters are of type `String`, which is an interface which inherits the `Func` type.
 
 {% highlight go %}
 type String interface {
@@ -123,8 +135,8 @@ Simplification is only done in rare cases like for the functions: `and`, `or` an
 so you won't need to worry about that.
 
 Trimming tries to evaluate the function at compile time and replace it with a constant.
-It can only trim pure functions that don't contain variables.
-This is why we calculate the `hasVariable` value, by checking whether any of the parameter has a variable.
+It can only trim pure functions, whose parameters also don't have variables.
+This is why we calculate the `hasVariable` value, by checking whether any of the parameters have a variable.
 If no parameter has a variable and our function is pure then it can be trimmed to a constant and should return `false` from its `HasVariable` method.
 There is a `Trim<Type>` function for each type.
 
@@ -132,36 +144,35 @@ Pre-calculating a hash is done to speed up comparisons.
 Comparisons are done as part of simplifications and minimizes the state space required by relapse.
 These comparisons are quite expensive for large queries and so we use hashes to speed them up.
 This is also why we want to calculate the hash only once.
-The `Hash` helper function expects the function name and the input parameters.
+The `Hash` helper function expects the function's name and its input parameters.
 
 {% highlight go %}
 func Hash(name string, hs ...Hashable) uint64
 {% endhighlight %}
 
 Now that we have defined the constructor, we can take a look at the other methods.
-The `Hash` and `HasVariable` methods simply returns the pre-calculated values.
-These values a pre-calculated for efficiency reasons.
+The `Hash` and `HasVariable` methods simply return the pre-calculated values.
+These values are pre-calculated for efficiency reasons.
 
 The `String` method should return the string representation of the function in its relapse syntax.
 Parsing this string as an expression should result in the same function.
 
 The `Compare` method is used for simplification of patterns and functions.
-We first check the Hash values, because if they differ then we don't need to do a deep comparison.
+We first compare the Hash values, because if they differ then we don't need to do a deep comparison.
 If the hash values are the same, then we need to look deeper.
 The most likely case is that the function types are the same.
 We can then compare the function's input parameters.
 If they are all the same, then we should return `0` for equal.
 If the types and hashes differ, then our last and most expensive resort is to create a string representation and compare these strings.
-This is really expensive for large expressions and that is why we first try hash and deep comparisons.
+This is really expensive for large expressions and that is why we first try the hash and deep comparisons.
 
-The `Eval` method evaluates each parameter and then using the values does the actual function calculation and returns the value.
+The `Eval` method evaluates each parameter and then using the resulting values does the actual function calculation and returns the value.
 
 All function types are defined [here](https://github.com/katydid/katydid/blob/master/relapse/funcs/types.go).
 
 Finally the `init` function registers the `contains` structure as a Relapse function.
 The first parameter is the function name. 
-This can differ from the structure name.
-This is especially useful when we want to do function overloading.
+This can differ from the structure name, which is especially useful when we want to do function overloading.
 
 ## Handling Errors
 
@@ -354,7 +365,7 @@ func (this *now) Compare(that Comparable) int {
 }
 
 func (this *now) String() string {
-	return "now"
+	return "now()"
 }
 
 func (this *now) HasVariable() bool { return true }
@@ -366,4 +377,4 @@ func init() {
 
 Obviously this function's value will be different almost every time that it is evaluated.
 
-Now that `HasVariable` returns `true` this function won't be trimmed and will return a different value for each evaluation.
+We make sure that `HasVariable` returns `true`, so that this function won't be trimmed and will return a different value for each evaluation.
