@@ -14,19 +14,11 @@ Relapse is implemented in Go, so adding your own functions will require you to w
 Let's look at the `contains` function:
 
 {% highlight go %}
-
-import (
-	"strings"
-	"github.com/katydid/katydid/relapse/funcs"
-)
-
-func Contains(s, sub String) Bool {
-	return &contains{s, sub}
-}
-
 type contains struct {
-	S      String
-	Substr String
+	S           String
+	Substr      String
+	hash        uint64
+	hasVariable bool
 }
 
 func (this *contains) Eval() (bool, error) {
@@ -41,43 +33,134 @@ func (this *contains) Eval() (bool, error) {
 	return strings.Contains(s, subStr), nil
 }
 
+func (this *contains) Compare(that Comparable) int {
+	if this.Hash() != that.Hash() {
+		if this.Hash() < that.Hash() {
+			return -1
+		}
+		return 1
+	}
+	if other, ok := that.(*contains); ok {
+		if c := this.S.Compare(other.S); c != 0 {
+			return c
+		}
+		if c := this.Substr.Compare(other.Substr); c != 0 {
+			return c
+		}
+		return 0
+	}
+	return strings.Compare(this.String(), that.String())
+}
+
+func (this *contains) HasVariable() bool {
+	return this.hasVariable
+}
+
+func (this *contains) String() string {
+	return "contains(" + this.S.String() + "," + this.Substr.String() + ")"
+}
+
+func (this *contains) Hash() uint64 {
+	return this.hash
+}
+
+func Contains(s, sub String) Bool {
+	return TrimBool(&contains{
+		S:           s,
+		Substr:      sub,
+		hash:        Hash("contains", s, sub),
+		hasVariable: s.HasVariable() || sub.HasVariable(),
+	})
+}
+
 func init() {
-	funcs.Register("contains", new(contains))
+	Register("contains", Contains)
 }
 
 {% endhighlight %}
 
-As we can see there are four parts to this function, excluding the import part.
-
-The first defines a publicly accessible way to create the function.  This is only for users that are constructing their queries programmatically in Go.
-
-The second defines the function parameters as a structure.
-Each of these parameters have a type `funcs.String`, which is a very simple interface.
+Our function is defined as a struct which has to implement the following interface:
 
 {% highlight go %}
-package funcs
-
-type String interface {
-	Eval() (string, error)
+type Func interface {
+	String() string
+	Compare(Comparable) int
+	Hash() uint64
+	HasVariable() bool
 }
 {% endhighlight %}
 
-This means that each parameter could be any structure or rather Relapse function that returns a string or even a string constant.
+Each `struct` must also have an `Eval` method which returns a value of type: 
+`string`, `[]byte`, `int64`, `uint64`, `bool` or `float64` and an `error`.
 
-The second part is the `contains` structure's Eval method, the actual implementation of the function.
-The method evaluates each of its parameters and then passes their values to the `strings.Contains` function which returns a `bool`.
-We can now guess that `contains` implements the `funcs.Bool` interface.
-
+Our example is a function of type `Bool` so it implements an `Eval` method that returns a `bool` and an `error` and the `Func` interface.
 {% highlight go %}
 type Bool interface {
+	Func
 	Eval() (bool, error)
 }
 {% endhighlight %}
 
+Finally, the function is registered with its name and a constructor.
+
+The constructor is responsible for:
+
+  - placing the parameters in the `struct`,
+  - simplification of the function (optional),
+  - trimming: calculating functions at compile time, if possible, and
+  - pre-calculating a hash of the function and whether the function has a variable.
+
+Each parameter is of type `Func`.  The type `String` in this case is an interface which includes a `Func` type.
+
+{% highlight go %}
+type String interface {
+	Func
+	Eval() (string, error)
+}
+{% endhighlight %}
+
+Simplification is only done in rare cases like for the functions: `and`, `or` and `not`, 
+so you won't need to worry about that.
+
+Trimming tries to evaluate the function at compile time and replace it with a constant.
+It can only trim pure functions that don't contain variables.
+This is why we calculate the `hasVariable` value, by checking whether any of the parameter has a variable.
+If no parameter has a variable and our function is pure then it can be trimmed to a constant and should return `false` from its `HasVariable` method.
+There is a `Trim<Type>` function for each type.
+
+Pre-calculating a hash is done to speed up comparisons.
+Comparisons are done as part of simplifications and minimizes the state space required by relapse.
+These comparisons are quite expensive for large queries and so we use hashes to speed them up.
+This is also why we want to calculate the hash only once.
+The `Hash` helper function expects the function name and the input parameters.
+
+{% highlight go %}
+func Hash(name string, hs ...Hashable) uint64
+{% endhighlight %}
+
+Now that we have defined the constructor, we can take a look at the other methods.
+The `Hash` and `HasVariable` methods simply returns the pre-calculated values.
+These values a pre-calculated for efficiency reasons.
+
+The `String` method should return the string representation of the function in its relapse syntax.
+Parsing this string as an expression should result in the same function.
+
+The `Compare` method is used for simplification of patterns and functions.
+We first check the Hash values, because if they differ then we don't need to do a deep comparison.
+If the hash values are the same, then we need to look deeper.
+The most likely case is that the function types are the same.
+We can then compare the function's input parameters.
+If they are all the same, then we should return `0` for equal.
+If the types and hashes differ, then our last and most expensive resort is to create a string representation and compare these strings.
+This is really expensive for large expressions and that is why we first try hash and deep comparisons.
+
+The `Eval` method evaluates each parameter and then using the values does the actual function calculation and returns the value.
+
 All function types are defined [here](https://github.com/katydid/katydid/blob/master/relapse/funcs/types.go).
 
 Finally the `init` function registers the `contains` structure as a Relapse function.
-The first parameter is the function name, since this can differ from the structure name.
+The first parameter is the function name. 
+This can differ from the structure name.
 This is especially useful when we want to do function overloading.
 
 ## Handling Errors
@@ -88,8 +171,10 @@ Here we see an `elem` function which returns the element in the list at the spec
 {% highlight go %}
 
 type elemDoubles struct {
-	List  Doubles
-	Index Int
+	List        Doubles
+	Index       Int
+	hash        uint64
+	hasVariable bool
 }
 
 func (this *elemDoubles) Eval() (float64, error) {
@@ -114,9 +199,8 @@ func (this *elemDoubles) Eval() (float64, error) {
 	return list[index], nil
 }
 
-func init() {
-	Register("elem", new(elemDoubles))
-}
+...
+
 
 {% endhighlight %}
 
@@ -181,27 +265,33 @@ import (
 	"regexp"
 )
 
-func Regex(e ConstString, s String) Bool {
-	return &regex{Expr: e, S: s}
-}
-
-type regex struct {
-	r    *regexp.Regexp
-	Expr ConstString
-	S    String
-}
-
-func (this *regex) Init() error {
-	e, err := this.Expr.Eval()
+func Regex(expr ConstString, input String) (Bool, error) {
+	if expr.HasVariable() {
+		return nil, fmt.Errorf("regex requires a constant expression as its first parameter, but it has a variable parameter")
+	}
+	e, err := expr.Eval()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	r, err := regexp.Compile(e)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	this.r = r
-	return nil
+	return TrimBool(&regex{
+		r:           r,
+		S:           input,
+		expr:        e,
+		hash:        Hash("regex", expr, input),
+		hasVariable: input.HasVariable(),
+	}), nil
+}
+
+type regex struct {
+	r           *regexp.Regexp
+	expr        string
+	S           String
+	hash        uint64
+	hasVariable bool
 }
 
 func (this *regex) Eval() (bool, error) {
@@ -212,39 +302,24 @@ func (this *regex) Eval() (bool, error) {
 	return this.r.MatchString(s), nil
 }
 
-func init() {
-	Register("regex", new(regex))
-}
+...
 {% endhighlight %}
 
-There are a few new concepts here.
-Firstly `r` is a field member of the structure, but it is not a parameter for the regular expression function.
-Only the structure's fields with an `Eval` method are seen as function parameters.
+We pre-calculate `r` in the constructor as a field member of the structure.
+Our `Eval` method can then use the compiled regular expression to match the bytes.
 
-Secondly `ConstString` is a type we have not encountered before.
-`ConstString` is defined as exactly the same interface as String.
-There is a corresponding constant type for each function type.
-Relapse evaluates all functions, which do not depend on a variable, at compile time.
-Variables will be discussed in the next section.
-By specifying a parameter as a constant, you are explicitly stating that this parameter will be evaluated at compile time and if this is not possible it must result in a compile error.
-
-Finally we get to the `Init` method, which compiles the regular expression at compile time, using the constant string and places the result in the field `r`.  
-The `Eval` method then uses the compiled regular expression to match the bytes.
-
-It is very important to remember to declare all the parameters you plan to use in the `Init` method as constant, otherwise you will get unexpected results.
+We first check that `expr` does not have a variable, 
+since we want to evaluate the expression at compile time.
+In the constructor we specify that this parameter is a `ConstString`.
+This is just a `String`, 
+but it makes sure that the generated documentation mentions that this function requires the parameter to be calculated at compile time.
 
 ## Variables
 
 Variables are values that possibly change with every execution, typically these are fields, but they can also include functions whose values change over time, database versions, etc.
 
 If your function does not evaluate to the same value given the same parameters every time, you should declare it as variable.
-Simply make sure your function satisfies the variable interface.
-
-{% highlight go %}
-type Variable interface {
-	IsVariable()
-}
-{% endhighlight %}
+Simply return `true` from the `HasVariable` method.
 
 Lets look at the `now` function:
 
@@ -261,14 +336,34 @@ func (this *now) Eval() (int64, error) {
 	return time.Now().UnixNano(), nil
 }
 
-func (this *now) IsVariable() {}
+func (this *now) Hash() uint64 {
+	return Hash("now")
+}
+
+func (this *now) Compare(that Comparable) int {
+	if this.Hash() != that.Hash() {
+		if this.Hash() < that.Hash() {
+			return -1
+		}
+		return 1
+	}
+	if _, ok := that.(*now); ok {
+		return 0
+	}
+	return strings.Compare(this.String(), that.String())
+}
+
+func (this *now) String() string {
+	return "now"
+}
+
+func (this *now) HasVariable() bool { return true }
 
 func init() {
-	Register("now", new(now))
+	Register("now", Now)
 }
 {% endhighlight %}
 
 Obviously this function's value will be different almost every time that it is evaluated.
-We added an  `IsVariable` method just to let Relapse know not to evaluate this function at compile time.
 
-
+Now that `HasVariable` returns `true` this function won't be trimmed and will return a different value for each evaluation.
