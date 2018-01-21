@@ -58,14 +58,13 @@ func main() {
 }
 {% endhighlight %}
 
-We can also use this with the `funcs` library to get a type safe construction of a function.
+We can also use construct functions on the leaves.
 
 {% highlight go %}
 import . "github.com/katydid/katydid/relapse/combinator"
-import . "github.com/katydid/katydid/funcs"
 
 func main() {
-	fun := NewStringEqual(NewStringVar(), NewStringConst("abc"))
+	fun := Eq(StringVar(), StringConst("abc"))
 	relapsePattern := In("a", Value(fun))
 	g := G{"main": relapsePattern}
 	relapseGrammar := g.Grammar()
@@ -82,25 +81,15 @@ import "github.com/katydid/katydid/relapse/ast"
 import "fmt"
 
 func validate(grammar *ast.Grammar, p parser.Interface) {
-	match := relapse.Interpret(grammar, p)
+	mem := relapse.Prepare(grammar)
+	match, err := relapse.Validate(mem, p)
+	if err != nil {
+		panic(err)
+	}
 	if !match {
 		fmt.Printf("Expected match given %s\n", grammar.String())
 	}
 }
 {% endhighlight %}
 
-We could also compile the grammar for faster repeated execution.
-
-{% highlight go %}
-import "github.com/katydid/katydid/relapse"
-import "github.com/katydid/katydid/relapse/ast"
-import "fmt"
-
-func validate(grammar *ast.Grammar, p parser.Interface) {
-	compiled := relapse.Compile(grammar)
-	match := relapse.Execute(compiled, p)
-	if !match {
-		fmt.Printf("Expected match given %s\n", grammar.String())
-	}
-}
-{% endhighlight %}
+We create a memoized grammar for faster repeated execution.
