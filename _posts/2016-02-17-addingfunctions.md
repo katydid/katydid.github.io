@@ -174,6 +174,53 @@ Finally the `init` function registers the `contains` structure as a Relapse func
 The first parameter is the function name. 
 This can differ from the structure name, which is especially useful when we want to do function overloading.
 
+## Testing
+
+Adding a user function is quite advanced behaviour and it is recommended that each function should be tested.
+Here is an example test for the contains function:
+
+{% highlight go %}
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/katydid/katydid/parser/debug"
+	"github.com/katydid/katydid/relapse/ast"
+	c "github.com/katydid/katydid/relapse/combinator"
+	"github.com/katydid/katydid/relapse/compose"
+)
+
+func TestContains(t *testing.T) {
+	expr := ast.NewFunction("contains", c.StringVar(), c.StringConst("TheStreet"))
+	b, err := compose.NewBool(expr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, err := compose.NewBoolFunc(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r, err := f.Eval(debug.NewStringValue("TheStreet"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r != true {
+		t.Fatalf("expected true")
+	}
+	r, err = f.Eval(debug.NewStringValue("ThatStreet"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r != false {
+		t.Fatalf("expected false")
+	}
+}
+
+{% endhighlight %}
+
+This will test that registration occurred correctly.
+
 ## Handling Errors
 
 Some functions are inevitably going to have possible runtime errors.
