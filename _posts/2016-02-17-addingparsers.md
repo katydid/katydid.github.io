@@ -9,8 +9,8 @@ order: 2
 Current implementations of parsers include:
 
   * [Protocol Buffers](https://developers.google.com/protocol-buffers/)
-  * [Json](http://json.org/)
-  * [Reflected structures in Go](http://golang.org/pkg/reflect)
+  * [Json](https://json.org/)
+  * [Reflected structures in Go](https://golang.org/pkg/reflect)
   * XML for the dinosaurs and dragons amongst us.
 
 Implementing a parser for a new serialization format or any other parsable text or bytes can be done by implementing the following interface.

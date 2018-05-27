@@ -5,7 +5,7 @@ title: "Katydid"
 
 ## Katydid
 
-<img src="{{ site.url }}/logo.png" width="300" style="float:right">
+<img src="https://katydid.github.io/logo.png" width="300" style="float:right">
 
 [**Katydid**](https://github.com/katydid/katydid) is a toolkit for trees.
 
@@ -35,8 +35,8 @@ A tree is a structure, record, class that does not contain any loops.
 Katydid has implemented parsers for multiple types of trees:
 
   * [Protocol Buffers](https://developers.google.com/protocol-buffers/)
-  * [Json](http://json.org/)
-  * [Reflected structures in Go](http://golang.org/pkg/reflect)
+  * [Json](https://json.org/)
+  * [Reflected structures in Go](https://golang.org/pkg/reflect)
   * and even XML for the dinosaurs and dragons.
   * Easy to add your own. Simply implement a [parser](./parser/addingparsers.html)
 
@@ -52,9 +52,9 @@ RelaxNG, DTD and XSchema are validation languages for XML.
 JsonSchema is a validation language for JSON.
 Relapse can validate any tree that has an implemented parser.
 
-[Relapse Tour](http://katydid.github.io/tour)
+[Relapse Tour](https://katydid.github.io/tour)
 
-[Relapse Playground](http://katydid.github.io/play)
+[Relapse Playground](https://katydid.github.io/play)
 
 #### What is a Katydid?
 

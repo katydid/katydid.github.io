@@ -32,7 +32,7 @@ func main() {
 }
 {% endhighlight %}
 
-If you don't understand the relapseString's value it might be good idea to first take the [Relapse Tour](http://katydid.github.io/tour).
+If you don't understand the relapseString's value it might be good idea to first take the [Relapse Tour](https://katydid.github.io/tour).
 
 We could also have programmatically constructed our ast (abstract syntax tree).
 

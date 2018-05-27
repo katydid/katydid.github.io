@@ -1,3 +1,3 @@
 #Katydid Documentation
 
-http://katydid.github.io
+https://katydid.github.io
