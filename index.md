@@ -9,8 +9,6 @@ title: "Katydid"
 
 [**Katydid**](https://github.com/katydid/katydid) is a toolkit for trees.
 
-[![GoDoc](https://godoc.org/github.com/katydid/katydid?status.svg)](https://godoc.org/github.com/katydid/katydid) [![Build Status](https://travis-ci.org/katydid/katydid.svg?branch=master)](https://travis-ci.org/katydid/katydid) Version 0.2 Beta.
-
 Currently there are three tools in the katydid toolkit:
 
   * **Relapse**: 
