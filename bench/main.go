@@ -27,11 +27,11 @@ import (
 )
 
 func newMemCmd(num int) *exec.Cmd {
-	return exec.Command("go", "test", "-v", "-run=XXXX", "-bench=.", "github.com/katydid/katydid/relapse/mem", "-args", fmt.Sprintf("-b.N=%d", num))
+	return exec.Command("go", "test", "-v", "-run=XXXX", "-bench=.", "github.com/katydid/katydid/validator-gogo-proto/testsuite/mem", "-args", fmt.Sprintf("-b.N=%d", num))
 }
 
 func newAutoCmd() *exec.Cmd {
-	return exec.Command("go", "test", "-v", "-run=XXXX", "-bench=.", "github.com/katydid/katydid/relapse/auto")
+	return exec.Command("go", "test", "-v", "-run=XXXX", "-bench=.", "github.com/katydid/katydid/validator-gogo-proto/testsuite/auto")
 }
 
 type benchRunner struct {
@@ -127,10 +127,10 @@ var templ = `
   <div>
   <center>
   <table>
-  	<tr><td>mem10</td><td>:</td><td>The memoized implementation of relapse running 10 iterations.</td></tr>
-  	<tr><td>mem100</td><td>:</td><td>The memoized implementation of relapse running 100 iterations.</td></tr>
-  	<tr><td>mem1000</td><td>:</td><td>The memoized implementation of relapse running 1000 iterations.</td></tr>
-  	<tr><td>auto</td><td>:</td><td>The compiled implementation of relapse.  <br/>Beware of the compilation time, which is not accounted for in this benchmark.</td></tr>
+  	<tr><td>mem10</td><td>:</td><td>The memoized implementation of validator running 10 iterations.</td></tr>
+  	<tr><td>mem100</td><td>:</td><td>The memoized implementation of validator running 100 iterations.</td></tr>
+  	<tr><td>mem1000</td><td>:</td><td>The memoized implementation of validator running 1000 iterations.</td></tr>
+  	<tr><td>auto</td><td>:</td><td>The compiled implementation of validator.  <br/>Beware of the compilation time, which is not accounted for in this benchmark.</td></tr>
   </table>
   </center>
   </div>
