@@ -1,3 +1,1 @@
-# Katydid Documentation
-
-http://katydid.org.za
+Redirects to http://katydid.org.za
